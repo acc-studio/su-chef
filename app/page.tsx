@@ -161,12 +161,12 @@ export default function Home() {
       {/* Navigation / Header */}
       <header className="flex justify-between items-center mb-12 z-10">
         <div className="flex items-center gap-3">
-          <div className="w-5 h-5 bg-accent rotate-45" />
-          <span className="font-mono text-sm tracking-[0.2em] font-bold">SOUS CHEF</span>
+          <img src="/icon.svg" alt="Su Chef Logo" className="w-5 h-5" />
+          <span className="font-mono text-sm tracking-[0.2em] font-bold">SU CHEF</span>
         </div>
         {(view === "RESULTS" || view === "ERROR") && (
-          <button 
-            onClick={() => setView("INPUT")} 
+          <button
+            onClick={() => setView("INPUT")}
             className="flex items-center gap-2 font-mono text-xs uppercase hover:text-accent"
           >
             <RefreshCw className="w-3 h-3" /> Reset
@@ -177,7 +177,7 @@ export default function Home() {
       {/* Content Area */}
       <div className="flex-1 flex flex-col max-w-6xl mx-auto w-full justify-center">
         <AnimatePresence mode="wait">
-          
+
           {/* VIEW: INPUT */}
           {view === "INPUT" && (
             <motion.div
@@ -200,8 +200,8 @@ export default function Home() {
                   className="w-full bg-transparent border-b-4 border-ink/10 py-4 text-2xl md:text-4xl font-sans focus:border-accent outline-none placeholder:text-ink/20"
                   autoFocus
                 />
-                <button 
-                  onClick={handleSearch} 
+                <button
+                  onClick={handleSearch}
                   className="absolute right-0 top-1/2 -translate-y-1/2 p-4"
                 >
                   <ArrowRight className="w-8 h-8 text-accent" />
@@ -212,10 +212,10 @@ export default function Home() {
 
           {/* VIEW: LOADING */}
           {view === "LOADING" && (
-            <motion.div 
-              key="loading" 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
               <div className="flex justify-center h-[50vh]"><ChefLoader /></div>
@@ -224,17 +224,17 @@ export default function Home() {
 
           {/* VIEW: ERROR */}
           {view === "ERROR" && (
-            <motion.div 
-              key="error" 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+            <motion.div
+              key="error"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               className="text-center w-full max-w-xl mx-auto"
             >
               <AlertCircle className="w-16 h-16 text-accent mx-auto mb-4" />
               <h2 className="font-serif text-3xl mb-2">Kitchen Error</h2>
               <p className="font-mono text-sm text-ink/60 mb-8">{errorMsg}</p>
-              <button 
-                onClick={() => setView("INPUT")} 
+              <button
+                onClick={() => setView("INPUT")}
                 className="bg-ink text-paper px-6 py-3 font-mono uppercase font-bold hover:bg-accent transition-colors"
               >
                 Try Again
@@ -244,10 +244,10 @@ export default function Home() {
 
           {/* VIEW: RESULTS */}
           {view === "RESULTS" && (
-            <motion.div 
-              key="results" 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+            <motion.div
+              key="results"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               className="w-full pb-12"
             >
               <h2 className="font-serif text-4xl mb-12">Service for "{craving}"</h2>

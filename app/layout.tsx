@@ -7,7 +7,7 @@ const spaceMono = Space_Mono({ weight: ["400", "700"], subsets: ["latin"], varia
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Sous Chef",
+  title: "Su Chef",
   description: "AI Recipe Generator",
 };
 
@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${dmSerif.variable} ${spaceMono.variable} ${inter.variable} antialiased relative min-h-screen`}>
-        
+
         {/* 1. The Warm Blob (Top Right) */}
         <div className="fixed -top-[20%] -right-[20%] blob-warm" />
 
