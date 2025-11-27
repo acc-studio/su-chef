@@ -19,6 +19,9 @@ const config: Config = {
         ink: "#1A1A1A",
         accent: "#D9381E",
         kale: "#4A5D23",
+        "jazz-bg": "#120B29", // Deep purple/indigo
+        "jazz-accent": "#D4AF37", // Gold
+        "jazz-text": "#E0D6FF", // Light lavender/white
       },
       boxShadow: {
         'hard': '8px 8px 0px 0px #1A1A1A',
