@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Clock, Flame, RefreshCw, AlertCircle, Plus, Martini } from "lucide-react";
+import { ArrowRight, Clock, Flame, RefreshCw, AlertCircle, Plus, Martini, ChefHat, MessageSquare } from "lucide-react";
 
 // --- TYPES ---
 type Recipe = {
@@ -36,99 +36,170 @@ const ChefLoader = ({ type }: { type: Tab }) => (
   </div>
 );
 
-const RecipeTicket = ({ recipe, index, type, onCopy, isCopied }: { recipe: Recipe; index: number; type: Tab; onCopy: () => void; isCopied: boolean }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 50 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: index * 0.2, duration: 0.5 }}
-    className={`group border flex flex-col shadow-hard hover:shadow-hard-sm hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-200 h-full ${type === "DRINK" ? "bg-[#1A103C] border-jazz-accent/30" : "bg-[#FDFCF8] border-ink"
-      }`}
-  >
-    {/* Header */}
-    <div className={`p-5 flex justify-between items-start ${type === "DRINK" ? "bg-jazz-bg text-jazz-accent" : "bg-ink text-paper"}`}>
-      <div>
-        <span className="font-mono text-[10px] uppercase tracking-widest opacity-60 block mb-1">
-          Ticket #{recipe.id}
-        </span>
-        <h3 className="font-serif text-3xl leading-[0.95]">{recipe.title}</h3>
-      </div>
-      {type === "DRINK" ? <Martini className="w-5 h-5 fill-current mt-1" /> : <Flame className="w-5 h-5 fill-current mt-1" />}
-    </div>
+const RecipeTicket = ({ recipe, index, type, onCopy, isCopied, onEdit }: { recipe: Recipe; index: number; type: Tab; onCopy: () => void; isCopied: boolean; onEdit: (id: string, request: string) => Promise<void> }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [requestText, setRequestText] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    {/* Stats */}
-    <div className={`flex border-b divide-x ${type === "DRINK" ? "bg-[#2A204C] border-jazz-accent/20 divide-jazz-accent/20 text-jazz-text" : "bg-paper border-ink divide-ink text-ink"}`}>
-      <div className="flex-1 py-3 flex items-center justify-center gap-2">
-        <Clock className="w-3 h-3 opacity-60" />
-        <span className="font-mono text-xs font-bold">{recipe.prepTime}m</span>
-      </div>
-      <div className="flex-1 py-3 flex items-center justify-center">
-        <span className="font-mono text-xs font-bold">{recipe.calories} kcal</span>
-      </div>
-      <div className={`flex-1 py-3 flex items-center justify-center ${type === "DRINK" ? "bg-jazz-accent/10 text-jazz-accent" : "bg-kale/10 text-kale"}`}>
-        <span className="font-mono text-[10px] uppercase font-bold tracking-wider">
-          {recipe.tags?.[0] || (type === "DRINK" ? "Classic" : "Fresh")}
-        </span>
-      </div>
-    </div>
+  const handleSubmitEdit = async () => {
+    if (!requestText.trim()) return;
+    setIsSubmitting(true);
+    await onEdit(recipe.id, requestText);
+    setIsSubmitting(false);
+    setIsEditing(false);
+    setRequestText("");
+  };
 
-    {/* Body */}
-    <div className={`p-6 md:p-8 flex-1 flex flex-col ${type === "DRINK" ? "text-jazz-text" : "text-ink"}`}>
-      <p className="font-serif italic text-xl opacity-70 mb-8 leading-tight">
-        "{recipe.tagline}"
-      </p>
-
-      <div className="grid gap-8 mb-8">
-        {/* Ingredients */}
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.2, duration: 0.5 }}
+      className={`group border flex flex-col shadow-hard hover:shadow-hard-sm hover:translate-x-[1px] hover:translate-y-[1px] transition-all duration-200 h-full ${type === "DRINK" ? "bg-[#1A103C] border-jazz-accent/30" : "bg-[#FDFCF8] border-ink"
+        }`}
+    >
+      {/* Header */}
+      <div className={`p-5 flex justify-between items-start ${type === "DRINK" ? "bg-jazz-bg text-jazz-accent" : "bg-ink text-paper"}`}>
         <div>
-          <h4 className={`font-mono text-[10px] uppercase tracking-widest border-b pb-2 mb-3 opacity-50 ${type === "DRINK" ? "border-jazz-accent/30" : "border-ink"}`}>
-            Mise en place
-          </h4>
-          <ul className="space-y-2">
-            {recipe.ingredients?.map((ing, i) => (
-              <li key={i} className={`flex justify-between text-sm border-b pb-1 ${type === "DRINK" ? "border-jazz-accent/10" : "border-ink/10"}`}>
-                <span className="font-sans font-medium">{ing.item}</span>
-                <span className="font-mono text-xs opacity-50">{ing.amount}</span>
-              </li>
-            )) || <li className="text-sm opacity-50">No ingredients listed</li>}
-          </ul>
+          <span className="font-mono text-[10px] uppercase tracking-widest opacity-60 block mb-1">
+            Ticket #{recipe.id}
+          </span>
+          <h3 className="font-serif text-3xl leading-[0.95]">{recipe.title}</h3>
         </div>
+        {type === "DRINK" ? <Martini className="w-5 h-5 fill-current mt-1" /> : <Flame className="w-5 h-5 fill-current mt-1" />}
+      </div>
 
-        {/* Steps */}
-        <div>
-          <h4 className={`font-mono text-[10px] uppercase tracking-widest border-b pb-2 mb-3 opacity-50 ${type === "DRINK" ? "border-jazz-accent/30" : "border-ink"}`}>
-            Execution
-          </h4>
-          <div className="space-y-5">
-            {recipe.steps?.map((step, i) => (
-              <div key={i} className="relative pl-6 group/step">
-                <span className={`absolute left-0 top-0 font-mono text-[10px] font-bold ${type === "DRINK" ? "text-jazz-accent" : "text-accent"}`}>
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <span className={`font-serif text-lg block mb-1 transition-colors ${type === "DRINK" ? "group-hover/step:text-jazz-accent" : "group-hover/step:text-accent"}`}>
-                  {step.action}
-                </span>
-                <p className="font-sans text-sm opacity-70">{step.description}</p>
-              </div>
-            )) || <div className="text-sm opacity-50">Instructions pending...</div>}
+      {/* Stats */}
+      <div className={`flex border-b divide-x ${type === "DRINK" ? "bg-[#2A204C] border-jazz-accent/20 divide-jazz-accent/20 text-jazz-text" : "bg-paper border-ink divide-ink text-ink"}`}>
+        <div className="flex-1 py-3 flex items-center justify-center gap-2">
+          <Clock className="w-3 h-3 opacity-60" />
+          <span className="font-mono text-xs font-bold">{recipe.prepTime}m</span>
+        </div>
+        <div className="flex-1 py-3 flex items-center justify-center">
+          <span className="font-mono text-xs font-bold">{recipe.calories} kcal</span>
+        </div>
+        <div className={`flex-1 py-3 flex items-center justify-center ${type === "DRINK" ? "bg-jazz-accent/10 text-jazz-accent" : "bg-kale/10 text-kale"}`}>
+          <span className="font-mono text-[10px] uppercase font-bold tracking-wider">
+            {recipe.tags?.[0] || (type === "DRINK" ? "Classic" : "Fresh")}
+          </span>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className={`p-6 md:p-8 flex-1 flex flex-col ${type === "DRINK" ? "text-jazz-text" : "text-ink"}`}>
+        <p className="font-serif italic text-xl opacity-70 mb-8 leading-tight">
+          "{recipe.tagline}"
+        </p>
+
+        <div className="grid gap-8 mb-8">
+          {/* Ingredients */}
+          <div>
+            <h4 className={`font-mono text-[10px] uppercase tracking-widest border-b pb-2 mb-3 opacity-50 ${type === "DRINK" ? "border-jazz-accent/30" : "border-ink"}`}>
+              Mise en place
+            </h4>
+            <ul className="space-y-2">
+              {recipe.ingredients?.map((ing, i) => (
+                <li key={i} className={`flex justify-between text-sm border-b pb-1 ${type === "DRINK" ? "border-jazz-accent/10" : "border-ink/10"}`}>
+                  <span className="font-sans font-medium">{ing.item}</span>
+                  <span className="font-mono text-xs opacity-50">{ing.amount}</span>
+                </li>
+              )) || <li className="text-sm opacity-50">No ingredients listed</li>}
+            </ul>
+          </div>
+
+          {/* Steps */}
+          <div>
+            <h4 className={`font-mono text-[10px] uppercase tracking-widest border-b pb-2 mb-3 opacity-50 ${type === "DRINK" ? "border-jazz-accent/30" : "border-ink"}`}>
+              Execution
+            </h4>
+            <div className="space-y-5">
+              {recipe.steps?.map((step, i) => (
+                <div key={i} className="relative pl-6 group/step">
+                  <span className={`absolute left-0 top-0 font-mono text-[10px] font-bold ${type === "DRINK" ? "text-jazz-accent" : "text-accent"}`}>
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span className={`font-serif text-lg block mb-1 transition-colors ${type === "DRINK" ? "group-hover/step:text-jazz-accent" : "group-hover/step:text-accent"}`}>
+                    {step.action}
+                  </span>
+                  <p className="font-sans text-sm opacity-70">{step.description}</p>
+                </div>
+              )) || <div className="text-sm opacity-50">Instructions pending...</div>}
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    {/* Footer */}
-    <div className={`mt-auto border-t p-4 flex justify-between items-center ${type === "DRINK" ? "bg-[#1A103C] border-jazz-accent/20" : "bg-paper border-ink"}`}>
-      <span className="font-mono text-[10px] opacity-40">AI_GEN_V1</span>
-      <button
-        onClick={onCopy}
-        className={`font-mono text-xs uppercase font-bold px-6 py-2 transition-colors ${type === "DRINK"
+      {/* Editing Interface */}
+      <AnimatePresence>
+        {isEditing && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className={`border-t px-6 overflow-hidden ${type === "DRINK" ? "border-jazz-accent/20 bg-[#1A103C]" : "border-ink/10 bg-paper"}`}
+          >
+            <div className="py-4 space-y-3">
+              <label className="font-mono text-[10px] uppercase tracking-widest opacity-60">
+                Chef Note / Modification
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={requestText}
+                  onChange={(e) => setRequestText(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSubmitEdit()}
+                  placeholder={type === "DRINK" ? "Make it stronger..." : "Make it vegan..."}
+                  disabled={isSubmitting}
+                  className={`flex-1 bg-transparent border-b py-2 text-sm font-sans focus:outline-none ${type === "DRINK"
+                    ? "border-jazz-accent/30 focus:border-jazz-accent text-jazz-text placeholder:text-jazz-text/30"
+                    : "border-ink/20 focus:border-accent text-ink placeholder:text-ink/30"
+                    }`}
+                  autoFocus
+                />
+                <button
+                  onClick={handleSubmitEdit}
+                  disabled={isSubmitting || !requestText.trim()}
+                  className={`p-2 rounded-full transition-all ${isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:scale-110 active:scale-95"} ${type === "DRINK" ? "text-jazz-accent" : "text-accent"}`}
+                >
+                  {isSubmitting ? <RefreshCw className="w-5 h-5 animate-spin" /> : <ArrowRight className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+
+      {/* Footer */}
+      <div className={`mt-auto border-t p-4 flex justify-between items-center ${type === "DRINK" ? "bg-[#1A103C] border-jazz-accent/20" : "bg-paper border-ink"}`}>
+        <button
+          onClick={() => setIsEditing(!isEditing)}
+          disabled={isSubmitting}
+          className={`flex items-center gap-2 font-mono text-[10px] uppercase font-bold transition-opacity hover:opacity-70 ${type === "DRINK" ? "text-jazz-accent" : "text-ink"}`}
+        >
+          {isEditing ? (
+            <>
+              <MessageSquare className="w-3 h-3" /> Cancel Req
+            </>
+          ) : (
+            <>
+              <ChefHat className="w-3 h-3" /> Customer Req
+            </>
+          )}
+        </button>
+
+        <button
+          onClick={onCopy}
+          className={`font-mono text-xs uppercase font-bold px-6 py-2 transition-colors ${type === "DRINK"
             ? "bg-jazz-accent text-jazz-bg hover:bg-white"
             : "bg-ink text-paper hover:bg-accent"
-          }`}>
-        {isCopied ? "Copied!" : (type === "DRINK" ? "Start Mixing" : "Start Cooking")}
-      </button>
-    </div>
-  </motion.div>
-);
+            }`}>
+          {isCopied ? "Copied!" : (type === "DRINK" ? "Start Mixing" : "Start Cooking")}
+        </button>
+      </div>
+    </motion.div>
+  );
+};
 
 const Background = ({ type }: { type: Tab }) => (
   <div className="fixed inset-0 -z-20 overflow-hidden pointer-events-none">
@@ -280,6 +351,36 @@ Generated by Su Chef 👨‍🍳
     }
   };
 
+  const handleEdit = async (id: string, request: string) => {
+    const recipeToEdit = recipes.find(r => r.id === id);
+    if (!recipeToEdit) return;
+
+    try {
+      // Optimistic update or just wait? Let's just wait but maybe show a toast in future.
+      const res = await fetch("/api/edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipe: recipeToEdit,
+          request: request
+        }),
+      });
+
+      const updatedRecipe = await res.json();
+
+      if (updatedRecipe && updatedRecipe.id) {
+        setRecipes(prev => prev.map(r => r.id === id ? updatedRecipe : r));
+      } else {
+        // Handle error silently or show alert?
+        console.error("Failed to update recipe", updatedRecipe);
+        alert("The Chef could not accommodate that request.");
+      }
+    } catch (e) {
+      console.error("Edit Error:", e);
+      alert("Lost connection to the kitchen.");
+    }
+  };
+
   const reset = () => {
     setView("INPUT");
     setRecipes([]);
@@ -389,8 +490,8 @@ Generated by Su Chef 👨‍🍳
                             key={ing}
                             onClick={() => toggleIngredient(ing)}
                             className={`px-4 py-2 rounded-full text-sm font-mono transition-all border ${selectedIngredients.includes(ing)
-                                ? "bg-jazz-accent text-jazz-bg border-jazz-accent"
-                                : "bg-transparent text-jazz-text/60 border-jazz-text/20 hover:border-jazz-accent/50"
+                              ? "bg-jazz-accent text-jazz-bg border-jazz-accent"
+                              : "bg-transparent text-jazz-text/60 border-jazz-text/20 hover:border-jazz-accent/50"
                               }`}
                           >
                             {ing}
@@ -453,8 +554,8 @@ Generated by Su Chef 👨‍🍳
                 <button
                   onClick={reset}
                   className={`px-6 py-3 font-mono uppercase font-bold transition-colors ${activeTab === "DRINK"
-                      ? "bg-jazz-accent text-jazz-bg hover:bg-white"
-                      : "bg-ink text-paper hover:bg-accent"
+                    ? "bg-jazz-accent text-jazz-bg hover:bg-white"
+                    : "bg-ink text-paper hover:bg-accent"
                     }`}
                 >
                   Try Again
@@ -482,6 +583,7 @@ Generated by Su Chef 👨‍🍳
                       type={activeTab}
                       onCopy={() => copyRecipe(r)}
                       isCopied={copiedId === r.id}
+                      onEdit={handleEdit}
                     />
                   ))}
                 </div>
