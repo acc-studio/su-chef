@@ -17,10 +17,9 @@ export async function POST(req: Request) {
 
     // 2. THE LADDER (Try preferred models in order)
     const modelsToTry = [
-      "gemini-pro-latest",       // Based on your successful diagnostic
-      "gemini-2.5-flash",
-      "gemini-flash-latest",
-      "gemini-pro"
+      "gemini-3-pro-preview",
+      "gemini-pro-latest",
+      "gemini-flash-latest"
     ];
 
     console.log(`Processing request for: "${craving}" (Type: ${type})`);

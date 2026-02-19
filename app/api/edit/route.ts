@@ -16,10 +16,9 @@ export async function POST(req: Request) {
 
         // 2. THE LADDER (Try preferred models in order)
         const modelsToTry = [
+            "gemini-3-pro-preview"
             "gemini-pro-latest",
-            "gemini-2.5-flash",
-            "gemini-flash-latest",
-            "gemini-pro"
+            "gemini-flash-latest"
         ];
 
         console.log(`Processing edit request for Recipe #${recipe.id}: "${request}"`);

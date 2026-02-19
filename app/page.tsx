@@ -258,8 +258,9 @@ export default function Home() {
 
   const commonIngredients = [
     "Gin", "Vodka", "Rum", "Whiskey", "Tequila", "Vermouth", "Campari",
-    "Lemon", "Lime", "Mint", "Basil", "Rich Syrup", "Simple Syrup",
-    "Coke", "Sprite", "Bitters", "Egg White"
+    "Lemon", "Lime", "Orange", "Mint", "Basil", "Rich Syrup", "Simple Syrup",
+    "Coke", "Sprite", "Ginger Beer", "Bitters", "Egg White",
+    "Mineral Water", "Honey", "Cointreau", "Kahlua"
   ];
 
   const allIngredients = [...commonIngredients, ...userIngredients];
