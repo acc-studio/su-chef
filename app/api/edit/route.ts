@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
         // 2. THE LADDER (Try preferred models in order)
         const modelsToTry = [
-            "gemini-3-pro-preview"
+            "gemini-3-pro-preview",
             "gemini-pro-latest",
             "gemini-flash-latest"
         ];
